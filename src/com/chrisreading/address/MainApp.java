@@ -3,6 +3,7 @@ package com.chrisreading.address;
 import java.io.IOException;
 
 import com.chrisreading.address.model.Person;
+import com.chrisreading.address.view.PersonEditDialogController;
 import com.chrisreading.address.view.PersonOverviewController;
 
 import javafx.application.Application;
@@ -12,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -85,6 +87,42 @@ public class MainApp extends Application {
 			controller.setMainApp(this);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Opens a dialog to edit the details of a selected person.
+	 * 
+	 * @param person person to be edited.
+	 * @return true if OK is clicked
+	 */
+	public boolean showPersonEditDialog(Person person) {
+		try {
+			// load the fxml file
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/PersonEditDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+					
+			// create the dialog stage
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Edit Person");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			
+			// set the person into the controller
+			PersonEditDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setPerson(person);
+			
+			// show the dialog and wait til the user closes it
+			dialogStage.showAndWait();
+			
+			return controller.isOkClicked();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 	
